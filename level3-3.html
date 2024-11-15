@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>自作ハイアンドローゲーム</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    #game-container {
+      margin-top: 20px;
+    }
+    input, button {
+      font-size: 16px;
+      padding: 10px;
+      margin: 10px;
+    }
+    #userGuess {
+      width: 200px;
+    }
+    #message {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>ハイアンドローゲーム(上級者)(目標：15 回以内)</h1>
+  <p>0 から 50 の間の数字を当ててください。出題者は 1 回まで嘘を付く事が出来ます。出題者が嘘を付ける回数は 3 回回答する度に 1 増えます。</p>
+
+  <div id="game-container">
+    <input type="number" id="userGuess" min="0" max="50" placeholder="0から50の数字" />
+    <button onclick="makeGuess()">予想する</button>
+    <p id="message"></p>
+    <p>試行回数: <span id="attempts">0</span></p>
+  </div>
+
+  <script>
+    let targetNumber = Math.floor(Math.random() * 50); // 0 から 50 のランダムな数字
+    let attempts = 0;
+    let liesAllowed = 1;
+    let liesUsed = 0;
+
+    function makeGuess() {
+      const userGuess = parseInt(document.getElementById('userGuess').value);
+      const messageElement = document.getElementById('message');
+      const attemptsElement = document.getElementById('attempts');
+
+      if (isNaN(userGuess) || userGuess < 0 || userGuess > 50) {
+        messageElement.innerText = "0から50の数字を入力してください。";
+        return;
+      }
+
+      attempts++;
+      attemptsElement.innerText = attempts;
+      const isCorrect = userGuess === targetNumber;
+
+      if (isCorrect) {
+        messageElement.innerText = `正解！ ${attempts}回で当たり！`;
+        resetGame(attempts);
+        attempts = 0;
+        liesAllowed = 1;
+        liesUsed = 0;
+      } else {
+        if (liesUsed < liesAllowed) {
+          // 嘘をつくチャンスがあれば
+          if (Math.random() < 0.5) {
+            // 嘘をつく
+            const lieDirection = userGuess < targetNumber ? 'Low' : 'High';
+            messageElement.innerText = lieDirection + "(嘘)";
+            liesUsed++;
+
+            // 3回に1回嘘をつける
+            if (attempts % 3 === 0) {
+              liesAllowed++;
+            }
+            return;
+          }
+        }
+
+        if (userGuess < targetNumber) {
+          messageElement.innerText = "High";
+        } else {
+          messageElement.innerText = "Low";
+        }
+
+        // 3回に1回嘘をつける
+        if (attempts % 3 === 0) {
+          liesAllowed++;
+        }
+      }
+    }
+
+    function resetGame(attempts) {
+      targetNumber = Math.floor(Math.random() * 50); // 新しいターゲットを設定
+      //attempts = 0;
+      liesUsed = 0;
+      liesAllowed = 1;
+      document.getElementById('attempts').innerText = attempts;
+      document.getElementById('userGuess').value = '';
+      document.getElementById('message').innerText = `正解！ ${attempts}回で当たり！` + " " + '次のゲームを開始します。';
+    }
+  </script>
+</body>
+</html>
