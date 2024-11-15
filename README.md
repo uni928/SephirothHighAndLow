@@ -1,5 +1,4 @@
-# SephirothHighAndLow[
-](https://uni928.github.io/SephirothHighAndLow/)
+https://uni928.github.io/SephirothHighAndLow/
 
 ハイアンドローゲームです。
 
